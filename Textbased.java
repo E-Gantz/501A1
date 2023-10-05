@@ -9,10 +9,7 @@ public class Textbased {
 	private int counter;
 	private int numberOfDoors;
 	private boolean keepPlaying;
-    private Item doorvariable;
-    private boolean isNemesis = false;
-    private Challenge roomChallenge;
-    private int nemesisChance = 0;
+    private Room currentRoom;
 
     public Textbased() {
         player = new Player();
@@ -21,12 +18,7 @@ public class Textbased {
         int initialHealth = player.startHealth(chosenCharacter);
         ArrayList<Item> items = new ArrayList<Item>(player.startItems(chosenCharacter));
         player = new Player(initialHealth, items);
-        doorvariable = new Item();
-        int nemesisChance = new Random().nextInt(100) + 1;
-        if (nemesisAppears == true || nemesisChance <=33) {
-            isNemesis = true;
-        }
-        roomChallenge = new Challenge(difficulty,false);
+        currentRoom = new Room(difficulty, nemesisAppears);
     }
 
     /**
@@ -188,7 +180,7 @@ public class Textbased {
                 int pickedOption = chooseAction();
 
                 if (pickedOption == 1) {
-                    if (player.hasItem(doorvariable)) {
+                    if (player.hasItem(currentRoom.getDoorVariable())) {
                         System.out.println("you may go through the door");
                         exitMessageText(counter);
                         int roomChoice = chooseIntOption(1, numberOfDoors);
@@ -200,11 +192,7 @@ public class Textbased {
                         } else {
                             nemesisAppears = false;
                         }
-                        nemesisChance = new Random().nextInt(100) + 1;
-                        if (nemesisAppears == true || nemesisChance <=33) {
-                            isNemesis = true;
-                        }
-                        roomChallenge = new Challenge(difficulty,isNemesis);
+                        currentRoom = new Room(difficulty, nemesisAppears);
                         counter ++;
                         numberOfDoors = entryMessageText(counter);
                     } else {
@@ -215,29 +203,27 @@ public class Textbased {
                     }
                 }
                 else if (pickedOption == 2) {
-                    if (isNemesis) {
+                    if (currentRoom.isNemesisRoom()) {
                         System.out.println("A NEMESIS APPEARS");
                         System.out.println("The nemesis asks you a question");
-                        isNemesis = false;
                     }
-                    System.out.println(roomChallenge.getQuestion());
+                    System.out.println(currentRoom.getChallenge().getQuestion());
                     System.out.print("Enter your answer: ");
                     String answer = chooseStringOption();
-                    boolean correctAnswer = roomChallenge.verifyAnswer(answer);
+                    boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
                     if (correctAnswer) {
                         System.out.println("Correct answer! you may go through the door.");
                         exitMessageText(counter);
                         int roomChoice = chooseIntOption(1, numberOfDoors);
+                        if (counter == 6){
+                            keepPlaying = false;
+                        }
                         if((counter == 4 || counter == 5) && roomChoice == 2) {
-                        nemesisAppears = true;
+                            nemesisAppears = true;
                         } else {
-                        nemesisAppears = false;
+                            nemesisAppears = false;
                         }
-                        nemesisChance = new Random().nextInt(100) + 1;
-                        if (nemesisAppears == true || nemesisChance <=33) {
-                            isNemesis = true;
-                        }
-                        roomChallenge = new Challenge(difficulty,isNemesis);
+                        currentRoom = new Room(difficulty, nemesisAppears);
                         counter ++;
                         numberOfDoors = entryMessageText(counter);
                     }
@@ -246,7 +232,7 @@ public class Textbased {
                         if (counter == 6){
                             keepPlaying = true;
                         }
-                        if (isNemesis) {
+                        if (currentRoom.isNemesisRoom()) {
                             player.updateHealth(2);
                             System.out.println("your current health:" + player.getHealth());
                             if (!player.isAlive()) {

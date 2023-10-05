@@ -6,44 +6,27 @@ public class Challenge {
 	String question;
 	String solution;
 	int questionNum;
-	int difficulty;
+	int cdifficulty;
 	
 	/**
 	 * constructor
 	 * @param difficulty   difficulty of the game
-	 * @param nemesisAppears   boolean that is true if the current room is a nemesis room
 	 */
-	public Challenge (int aDifficulty, boolean aNemesisAppears) { //changed from String question, String answer to int questionNum
+	public Challenge (int difficulty) {
 		singleton = getInstance();
-		difficulty = aDifficulty;
-		if (aNemesisAppears) {
-			difficulty++;
-		}
-		questionNum = pickQuestionNum();
+		this.cdifficulty = difficulty;
+		questionNum = pickQuestionNum(difficulty);
 		question = getChallenge(questionNum);
 		solution = getSolution(questionNum);
 
 	}	
 
-	public Challenge (int aDifficulty, boolean aNemesisAppears, int specificQuesiton) {
+	public Challenge (int difficulty, int specificQuesiton) {
 		singleton = getInstance();
-		difficulty = aDifficulty;
-		if (aNemesisAppears) {
-			difficulty++;
-		}
 		questionNum = specificQuesiton;
 		question = getChallenge(questionNum);
 		solution = getSolution(questionNum);
 	}	
-	
-	/**
-	 * copy constructor
-	 * @param toCopy   challenge to copy.
-	 */
-	public Challenge(Challenge toCopy) {
-		question = toCopy.getQuestion();
-		solution = toCopy.getSolution();
-	}
 	
 	/**
 	 * looks like there might be a privacy leak here, however being that this is supposed to be 
@@ -55,6 +38,10 @@ public class Challenge {
 			singleton = new ChallengeList();
 		}
 		return singleton;
+	}
+
+	public int getDifficulty(){
+		return cdifficulty;
 	}
 
 	/**
@@ -83,14 +70,6 @@ public class Challenge {
 	 */
 	public int getQuestionNum() {
 		return questionNum;
-	}
-	
-	/**
-	 * 
-	 * @return difficulty;
-	 */
-	public int getDifficulty(){
-		return difficulty;
 	}
 
 	/**
@@ -128,35 +107,19 @@ public class Challenge {
 	}
 	
 	/**
-	 * validates user input
-	 * @param userInput
-	 * @return
-	 */
-	public boolean checkValidInput (String userInput) { 
-		boolean valid = false;
-		if (!(userInput.contains(" "))){
-			valid = true;
-			}
-		return valid;	
-	}
-	
-	/**
 	 * picks a random number based on difficulty that will be used as the index to get a random question
 	 * and solution.
 	 * @param difficulty   game difficulty setting
 	 * @param nemesisAppears    boolean that's true if the current room is a nemesis room.
 	 */
-	public int pickQuestionNum() {
-		if (difficulty == 1) {
+	public int pickQuestionNum(int difficulty) {
+		if (difficulty <= 1) {
 			questionNum = new Random().nextInt(20);
 		}
 		else if (difficulty == 2) {
 			questionNum = new Random().nextInt(20) + 20;
 		}
-		else if (difficulty == 3) {
-			questionNum = new Random().nextInt(20) + 40;
-		}
-		else if (difficulty == 4) {
+		else if (difficulty >= 3) {
 			questionNum = new Random().nextInt(20) + 40;
 		}
 		return questionNum;
