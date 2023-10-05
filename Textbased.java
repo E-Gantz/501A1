@@ -16,25 +16,8 @@ public class Textbased {
 
     public Textbased() {
         player = new Player();
-
-        difficulty = 0;
-        System.out.println("There are 3 difficulty levels: ");
-        System.out.println("1: easy");
-        System.out.println("2: medium");
-        System.out.println("3: hard");
-        System.out.println("Choice: ");
-        difficulty = chooseIntOption(1,3);
-
-        int chosenCharacter = 0;
-        System.out.println ("1: Jeff, starting health: 5,  Starting Item: Fire Key");
-        System.out.println ("2: Dan, starting health: 10,  Starting Item: All Keys");
-        System.out.println ("3: Suzy, starting health: 7,  Starting Item: Earth Key");
-        System.out.println ("4: Tej, starting health: 8,  Starting Item: Metal Key");
-        System.out.println ("5: Suki, starting health: 4,  Starting Item: Water Key, Wood Key");
-        System.out.println ("6: Deprived, starting health: 1,  Starting Item: None");
-        System.out.print ("Pick your character: ");
-        chosenCharacter = chooseIntOption(1,6);
-
+        difficulty = pickDifficulty();
+        int chosenCharacter = pickCharacter();
         int initialHealth = player.startHealth(chosenCharacter);
         ArrayList<Item> items = new ArrayList<Item>(player.startItems(chosenCharacter));
         player = new Player(initialHealth, items);
@@ -44,6 +27,36 @@ public class Textbased {
             isNemesis = true;
         }
         roomChallenge = new Challenge(difficulty,false);
+    }
+
+    /**
+	 * pickDifficulty lets the user choose what difficulty they would like to play on.
+	 * this is fine.
+	 * @return
+	 */
+    public int pickDifficulty() {
+        System.out.println("There are 3 difficulty levels: ");
+        System.out.println("1: easy");
+        System.out.println("2: medium");
+        System.out.println("3: hard");
+        System.out.println("Choice: ");
+        return chooseIntOption(1,3);
+    }
+
+    /**
+	 * pickCharacter lets the user choose which character they would like to play the game as.
+	 * this is fine.
+	 * @return
+	 */
+    public int pickCharacter(){
+        System.out.println ("1: Jeff, starting health: 5,  Starting Item: Fire Key");
+        System.out.println ("2: Dan, starting health: 10,  Starting Item: All Keys");
+        System.out.println ("3: Suzy, starting health: 7,  Starting Item: Earth Key");
+        System.out.println ("4: Tej, starting health: 8,  Starting Item: Metal Key");
+        System.out.println ("5: Suki, starting health: 4,  Starting Item: Water Key, Wood Key");
+        System.out.println ("6: Deprived, starting health: 1,  Starting Item: None");
+        System.out.print ("Pick your character: ");
+        return chooseIntOption(1,6);
     }
 
     /**
@@ -155,6 +168,14 @@ public class Textbased {
 		}
 	}
 
+    public int chooseAction(){
+        System.out.println("Choices: ");
+        System.out.println("1: use an item");
+        System.out.println("2: " + "try the puzzle");
+        System.out.print("Enter your choice: ");
+        return chooseIntOption(1,2);
+    }
+
     public void play(){
         keepPlaying = true;
         counter = 1;
@@ -164,11 +185,7 @@ public class Textbased {
                 if (counter == 6) {
                     keepPlaying = false;
                 }
-                System.out.println("Choices: ");
-                System.out.println("1: use an item");
-                System.out.println("2: " + "try the puzzle");
-                System.out.print("Enter your choice: ");
-                int pickedOption = chooseIntOption(1,2);
+                int pickedOption = chooseAction();
 
                 if (pickedOption == 1) {
                     if (player.hasItem(doorvariable)) {
