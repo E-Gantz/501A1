@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Textbased {
@@ -100,12 +99,12 @@ public class Textbased {
 
     
     /**
-	 * entryMessageText is used to display an entry message when the player enters a new room.
+	 * entryMessage is used to display an entry message when the player enters a new room.
 	 * the purpose of the counter is to keep track of which room they are in.
 	 * @param counter
 	 * @return
 	 */
-	public static int entryMessageText(int counter) {
+	public static int entryMessage(int counter) {
         int numberOfDoors = 1;
 		if(counter == 1){
 			numberOfDoors = 2;
@@ -130,13 +129,13 @@ public class Textbased {
 	}
 	
 	/**
-	 * exitMessageText is used to display a message whenever the user completes the challenge in a
+	 * exitMessage is used to display a message whenever the user completes the challenge in a
 	 * room and we need them to pick which door they would like to go through. the purpose
 	 * of the counter is to keep track of which of the 6 rooms they are in.
 	 * @param counter
 	 * @return
 	 */
-	public static void exitMessageText(int counter) {
+	public static void exitMessage(int counter) {
 		if(counter == 1){
 			System.out.println("Do you want to go through the first door or the second door?");
 			System.out.println("Choice: ");
@@ -168,87 +167,81 @@ public class Textbased {
         return chooseIntOption(1,2);
     }
 
+    public void tryTheDoor(){
+        if (player.hasItem(currentRoom.getDoorVariable())) {
+            System.out.println("you may go through the door");
+            pickaRoom();
+        } else {
+            System.out.println("you don't have the correct item for that");
+        }
+    }
+
+    public void pickaRoom(){
+        exitMessage(counter);
+        int roomChoice = chooseIntOption(1, numberOfDoors);
+        if (counter == 6){
+            keepPlaying = false;
+        }
+        if((counter == 4 || counter == 5) && roomChoice == 2) {
+            nemesisAppears = true;
+        } else {
+            nemesisAppears = false;
+        }
+        currentRoom = new Room(difficulty, nemesisAppears);
+        counter ++;
+        numberOfDoors = entryMessage(counter);
+    }
+
+    public void loseHealth(){
+        if (currentRoom.isNemesisRoom()) {
+            player.updateHealth(2);
+            System.out.println("your current health:" + player.getHealth());
+            if (!player.isAlive()) {
+                System.out.print("YOU DIED");
+                System.exit(0);
+            }
+        }
+        else {
+            player.updateHealth(1);
+            System.out.println("your current health:" + player.getHealth());
+            if (!player.isAlive()) {
+                System.out.print("YOU DIED");
+                System.exit(0);
+            }
+        }
+    }
+
+    public void tryPuzzle(){
+        if (currentRoom.isNemesisRoom()) {
+            System.out.println("A NEMESIS APPEARS");
+            System.out.println("The nemesis asks you a question");
+        }
+        System.out.println(currentRoom.getChallenge().getQuestion());
+        System.out.print("Enter your answer: ");
+        String answer = chooseStringOption();
+        boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
+        if (correctAnswer) {
+            System.out.println("Correct answer! you may go through the door.");
+            pickaRoom();
+        }
+        else if (!correctAnswer) {
+            System.out.println("Incorrect answer! you lost some health.");
+            loseHealth();
+        }
+    }
+
     public void play(){
         keepPlaying = true;
         counter = 1;
-        numberOfDoors = entryMessageText(counter);
+        numberOfDoors = entryMessage(counter);
         while (counter <= 6) {
             while (keepPlaying) {
-                if (counter == 6) {
-                    keepPlaying = false;
-                }
                 int pickedOption = chooseAction();
-
                 if (pickedOption == 1) {
-                    if (player.hasItem(currentRoom.getDoorVariable())) {
-                        System.out.println("you may go through the door");
-                        exitMessageText(counter);
-                        int roomChoice = chooseIntOption(1, numberOfDoors);
-                        if (counter == 6){
-                            keepPlaying = false;
-                        }
-                        if((counter == 4 || counter == 5) && roomChoice == 2) {
-                            nemesisAppears = true;
-                        } else {
-                            nemesisAppears = false;
-                        }
-                        currentRoom = new Room(difficulty, nemesisAppears);
-                        counter ++;
-                        numberOfDoors = entryMessageText(counter);
-                    } else {
-                        System.out.println("you don't have the correct item for that");
-                        if (counter == 6){
-                            keepPlaying = true;
-                        }
-                    }
+                    tryTheDoor();
                 }
                 else if (pickedOption == 2) {
-                    if (currentRoom.isNemesisRoom()) {
-                        System.out.println("A NEMESIS APPEARS");
-                        System.out.println("The nemesis asks you a question");
-                    }
-                    System.out.println(currentRoom.getChallenge().getQuestion());
-                    System.out.print("Enter your answer: ");
-                    String answer = chooseStringOption();
-                    boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
-                    if (correctAnswer) {
-                        System.out.println("Correct answer! you may go through the door.");
-                        exitMessageText(counter);
-                        int roomChoice = chooseIntOption(1, numberOfDoors);
-                        if (counter == 6){
-                            keepPlaying = false;
-                        }
-                        if((counter == 4 || counter == 5) && roomChoice == 2) {
-                            nemesisAppears = true;
-                        } else {
-                            nemesisAppears = false;
-                        }
-                        currentRoom = new Room(difficulty, nemesisAppears);
-                        counter ++;
-                        numberOfDoors = entryMessageText(counter);
-                    }
-                    else if (!correctAnswer) {
-                        System.out.println("Incorrect answer! you lost some health.");
-                        if (counter == 6){
-                            keepPlaying = true;
-                        }
-                        if (currentRoom.isNemesisRoom()) {
-                            player.updateHealth(2);
-                            System.out.println("your current health:" + player.getHealth());
-                            if (!player.isAlive()) {
-                                System.out.print("YOU DIED");
-                                System.exit(0);
-                            }
-                        }
-                        else {
-                            player.updateHealth(1);
-                            System.out.println("your current health:" + player.getHealth());
-                            if (!player.isAlive()) {
-                                System.out.print("YOU DIED");
-                                System.exit(0);
-                            }
-                        }
-                    }
+                    tryPuzzle();
                 }
             }
         }	

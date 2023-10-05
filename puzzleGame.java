@@ -27,6 +27,7 @@ public class puzzleGame{
         }
 
         if (gameMode == 1){
+            System.out.println("Text-based chosen");
             Textbased tex = new Textbased();
             tex.play();
         }
