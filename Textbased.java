@@ -23,29 +23,7 @@ public class Textbased {
         System.out.println("2: medium");
         System.out.println("3: hard");
         System.out.println("Choice: ");
-        Scanner keyboard2 = new Scanner(System.in);
-        while (true){
-            while (!keyboard2.hasNextInt()){
-                keyboard2.next();
-                System.out.println("Please enter a number: ");
-            }
-            int pickedOption2 = keyboard2.nextInt();
-            if (pickedOption2 == 1){
-                difficulty = 1;
-                break;
-            }
-            else if (pickedOption2 == 2){
-                difficulty = 2;
-                break;
-            }
-            else if (pickedOption2 == 3){
-                difficulty = 3;
-                break;
-            }
-            else {
-                System.out.println("please enter a valid choice.");
-            }
-        }
+        difficulty = chooseIntOption(1,3);
 
         int chosenCharacter = 0;
         System.out.println ("1: Jeff, starting health: 5,  Starting Item: Fire Key");
@@ -55,24 +33,7 @@ public class Textbased {
         System.out.println ("5: Suki, starting health: 4,  Starting Item: Water Key, Wood Key");
         System.out.println ("6: Deprived, starting health: 1,  Starting Item: None");
         System.out.print ("Pick your character: ");
-        Scanner keyboard3 = new Scanner(System.in);
-        while (true) {
-            
-            while (!keyboard3.hasNextInt()){
-                keyboard3.next();
-                System.out.println("Please enter a number: ");
-            }
-            int pickedOption3 = keyboard3.nextInt();
-
-            if (pickedOption3 == 1 || pickedOption3 == 2 || pickedOption3 == 3 || pickedOption3 == 4 || pickedOption3 == 5 || pickedOption3 == 6) {
-                chosenCharacter = pickedOption3;
-                break;
-            }
-            else {
-                System.out.println("please enter a valid choice.");
-            }
-        
-        }
+        chosenCharacter = chooseIntOption(1,6);
 
         int initialHealth = player.startHealth(chosenCharacter);
         ArrayList<Item> items = new ArrayList<Item>(player.startItems(chosenCharacter));
@@ -85,158 +46,32 @@ public class Textbased {
         roomChallenge = new Challenge(difficulty,false);
     }
 
-    public void play(){
-        keepPlaying = true;
-        counter = 1;
-        numberOfDoors = entryMessageText(counter);
-        Scanner keyboard4 = new Scanner(System.in);
-        while (counter <= 6) {
-            while (keepPlaying) {
-                if (counter == 6) {
-                    keepPlaying = false;
-                }
-                System.out.println("Choices: ");
-                System.out.println("1: use an item");
-                System.out.println("2: " + "try the puzzle");
-                System.out.print("Enter your choice: ");
-                    
-                while (!keyboard4.hasNextInt()){
-                    keyboard4.next();
-                    System.out.println("Please enter a number: ");
-                }
-                int pickedOption4 = keyboard4.nextInt();
+    /**
+	 * chooseIntOption is used when we need the player to enter an integer as input.
+	 * @return
+	 */
+	public int chooseIntOption(int x, int y) {
+		Scanner keyboard = new Scanner(System.in);
+        int pickedOption = -99;
+        while (!keyboard.hasNextInt()){
+            keyboard.next();
+            System.out.println("Please enter a number: ");
+        }
+        pickedOption = keyboard.nextInt();
 
-                if (pickedOption4 == 1) {
-                    if (player.hasItem(doorvariable)) {
-                        System.out.println("you may go through the door");
-                        exitMessageText(counter);
-                        Scanner keyboard6 = new Scanner(System.in);
-                        int roomChoice;
-                        while (true) {
-                            
-                            while (!keyboard6.hasNextInt()){
-                                keyboard6.next();
-                                System.out.println("Please enter a number: ");
-                            }
-                            roomChoice = keyboard6.nextInt();
+		while (!(pickedOption >= x && pickedOption <= y)){
+            System.out.println("please enter a valid choice.");
+            while (!keyboard.hasNextInt()){
+				keyboard.next();
+				System.out.println("Please enter a number: ");
+			}
+		    pickedOption = keyboard.nextInt();
+        }
+		
+		return pickedOption;
+	}
 
-                            if (roomChoice <= 0 || roomChoice > numberOfDoors) {
-                                System.out.println("please enter a valid choice.");
-                            }
-                            else {
-                                break;
-                            }
-                        
-                        }
-                        if (counter == 6){
-                            keepPlaying = false;
-                        }
-                        if((counter == 4 || counter == 5) && roomChoice == 2) {
-                            nemesisAppears = true;
-                        } else {
-                            nemesisAppears = false;
-                        }
-                        nemesisChance = new Random().nextInt(100) + 1;
-                        if (nemesisAppears == true || nemesisChance <=33) {
-                            isNemesis = true;
-                        }
-                        roomChallenge = new Challenge(difficulty,isNemesis);
-                        counter ++;
-                        numberOfDoors = entryMessageText(counter);
-                    } else {
-                        System.out.println("you don't have the correct item for that");
-                        if (counter == 6){
-                            keepPlaying = true;
-                        }
-                    }
-                }
-                else if (pickedOption4 == 2) {
-                    if (isNemesis) {
-                        System.out.println("A NEMESIS APPEARS");
-                        System.out.println("The nemesis asks you a question");
-                        isNemesis = false;
-                    }
-                    System.out.println(roomChallenge.getQuestion());
-                    System.out.print("Enter your answer: ");
-                    Scanner keyboard5 = new Scanner(System.in);
-                    while (!keyboard5.hasNextLine()){
-                            keyboard5.next();
-                            System.out.println("Please enter a string: ");
-                        }
-                    String answer = keyboard5.nextLine();
-
-                    if (!(roomChallenge.checkValidInput(answer))){
-                        System.out.println("please enter a valid one word answer, with no spaces.");
-                        while (!keyboard5.hasNextLine()){
-                                keyboard5.next();
-                                System.out.println("Please enter a string: ");
-                            }
-                        answer = keyboard5.nextLine();
-                    }
-                    boolean correctAnswer = roomChallenge.verifyAnswer(answer);
-                    if (correctAnswer) {
-                        System.out.println("Correct answer! you may go through the door.");
-                        System.out.println("you may go through the door");
-                        exitMessageText(counter);
-                        Scanner keyboard6 = new Scanner(System.in);
-                        int roomChoice;
-                        while (true) {
-                            
-                            while (!keyboard6.hasNextInt()){
-                                keyboard6.next();
-                                System.out.println("Please enter a number: ");
-                            }
-                            roomChoice = keyboard6.nextInt();
-
-                            if (roomChoice <= 0 || roomChoice > numberOfDoors) {
-                                System.out.println("please enter a valid choice.");
-                            }
-                            else {
-                                break;
-                            }
-                        
-                        }
-                        if((counter == 4 || counter == 5) && roomChoice == 2) {
-                        nemesisAppears = true;
-                        } else {
-                        nemesisAppears = false;
-                        }
-                        nemesisChance = new Random().nextInt(100) + 1;
-                        if (nemesisAppears == true || nemesisChance <=33) {
-                            isNemesis = true;
-                        }
-                        roomChallenge = new Challenge(difficulty,isNemesis);
-                        counter ++;
-                        numberOfDoors = entryMessageText(counter);
-                    }
-                    else if (!correctAnswer) {
-                        System.out.println("Incorrect answer! you lost some health.");
-                        if (counter == 6){
-                            keepPlaying = true;
-                        }
-                        if (isNemesis) {
-                            player.updateHealth(2);
-                            System.out.println("your current health:" + player.getHealth());
-                            if (!player.isAlive()) {
-                                System.out.print("YOU DIED");
-                                System.exit(0);
-                            }
-                        }
-                        else {
-                            player.updateHealth(1);
-                            System.out.println("your current health:" + player.getHealth());
-                            if (!player.isAlive()) {
-                                System.out.print("YOU DIED");
-                                System.exit(0);
-                            }
-                        }
-                    }
-                }
-            }
-        }	
-        System.out.println("Congratulations, you completed our game!.");
-    }
-
+    
     /**
 	 * entryMessageText is used to display an entry message when the player enters a new room.
 	 * the purpose of the counter is to keep track of which room they are in.
@@ -297,4 +132,116 @@ public class Textbased {
 			System.out.println("Choice: 1 for yes, 2 for no");
 		}
 	}
+
+    public void play(){
+        keepPlaying = true;
+        counter = 1;
+        numberOfDoors = entryMessageText(counter);
+        while (counter <= 6) {
+            while (keepPlaying) {
+                if (counter == 6) {
+                    keepPlaying = false;
+                }
+                System.out.println("Choices: ");
+                System.out.println("1: use an item");
+                System.out.println("2: " + "try the puzzle");
+                System.out.print("Enter your choice: ");
+                int pickedOption = chooseIntOption(1,2);
+
+                if (pickedOption == 1) {
+                    if (player.hasItem(doorvariable)) {
+                        System.out.println("you may go through the door");
+                        exitMessageText(counter);
+                        int roomChoice = chooseIntOption(1, numberOfDoors);
+                        if (counter == 6){
+                            keepPlaying = false;
+                        }
+                        if((counter == 4 || counter == 5) && roomChoice == 2) {
+                            nemesisAppears = true;
+                        } else {
+                            nemesisAppears = false;
+                        }
+                        nemesisChance = new Random().nextInt(100) + 1;
+                        if (nemesisAppears == true || nemesisChance <=33) {
+                            isNemesis = true;
+                        }
+                        roomChallenge = new Challenge(difficulty,isNemesis);
+                        counter ++;
+                        numberOfDoors = entryMessageText(counter);
+                    } else {
+                        System.out.println("you don't have the correct item for that");
+                        if (counter == 6){
+                            keepPlaying = true;
+                        }
+                    }
+                }
+                else if (pickedOption == 2) {
+                    if (isNemesis) {
+                        System.out.println("A NEMESIS APPEARS");
+                        System.out.println("The nemesis asks you a question");
+                        isNemesis = false;
+                    }
+                    System.out.println(roomChallenge.getQuestion());
+                    System.out.print("Enter your answer: ");
+                    Scanner keyboard5 = new Scanner(System.in);
+                    while (!keyboard5.hasNextLine()){
+                            keyboard5.next();
+                            System.out.println("Please enter a string: ");
+                        }
+                    String answer = keyboard5.nextLine();
+
+                    if (!(roomChallenge.checkValidInput(answer))){
+                        System.out.println("please enter a valid one word answer, with no spaces.");
+                        while (!keyboard5.hasNextLine()){
+                                keyboard5.next();
+                                System.out.println("Please enter a string: ");
+                            }
+                        answer = keyboard5.nextLine();
+                    }
+                    boolean correctAnswer = roomChallenge.verifyAnswer(answer);
+                    if (correctAnswer) {
+                        System.out.println("Correct answer! you may go through the door.");
+                        System.out.println("you may go through the door");
+                        exitMessageText(counter);
+                        int roomChoice = chooseIntOption(1, numberOfDoors);
+                        if((counter == 4 || counter == 5) && roomChoice == 2) {
+                        nemesisAppears = true;
+                        } else {
+                        nemesisAppears = false;
+                        }
+                        nemesisChance = new Random().nextInt(100) + 1;
+                        if (nemesisAppears == true || nemesisChance <=33) {
+                            isNemesis = true;
+                        }
+                        roomChallenge = new Challenge(difficulty,isNemesis);
+                        counter ++;
+                        numberOfDoors = entryMessageText(counter);
+                    }
+                    else if (!correctAnswer) {
+                        System.out.println("Incorrect answer! you lost some health.");
+                        if (counter == 6){
+                            keepPlaying = true;
+                        }
+                        if (isNemesis) {
+                            player.updateHealth(2);
+                            System.out.println("your current health:" + player.getHealth());
+                            if (!player.isAlive()) {
+                                System.out.print("YOU DIED");
+                                System.exit(0);
+                            }
+                        }
+                        else {
+                            player.updateHealth(1);
+                            System.out.println("your current health:" + player.getHealth());
+                            if (!player.isAlive()) {
+                                System.out.print("YOU DIED");
+                                System.exit(0);
+                            }
+                        }
+                    }
+                }
+            }
+        }	
+        System.out.println("Congratulations, you completed our game!.");
+    }
 }
