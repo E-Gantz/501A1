@@ -215,50 +215,39 @@ public class Graphicsbased implements MouseListener, ActionListener {
         uiCounter = 3;
 	}
 
-    public void tryTheDoor(int x, int y){
+    public Boolean doorClicked(int x, int y){
         if ((counter == 1 || counter == 5) && (x >= 270 && x <= 430 && y >= 185 && y <= 570)) {
-            if (player.hasItem(currentRoom.getDoorVariable())) {
-                gui.setMessage("you may go through the door");
-                uiCounter = 4;
-            } else {
-                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-            }
+            return true;
         }
         else if ((counter == 1 || counter == 5) && (x >= 730 && x <= 900 && y >= 185 && y <= 570)) {
-            if (player.hasItem(currentRoom.getDoorVariable())) {
-                gui.setMessage("you may go through the door");
-                uiCounter = 4;
-            } else {
-                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-            }
+            return true;
         }
         else if ((counter == 2 || counter == 4) && (x >= 110 && x <= 290 && y >= 185 && y <= 570)) {
-            if (player.hasItem(currentRoom.getDoorVariable())) {
-                gui.setMessage("you may go through the door");
-                uiCounter = 4;
-            } else {
-                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-            }
+            return true;
         }
         
         else if((counter == 2 || counter == 4) && (x >= 490 && x <= 660 && y >= 185 && y <= 570)) {
-            if (player.hasItem(currentRoom.getDoorVariable())) {
-                gui.setMessage("you may go through the door");
-                uiCounter = 4;
-            } else {
-                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-            }
+            return true;
         }
         else if ((counter == 2 || counter == 4) && (x >= 820 && x <= 990 && y >= 185 && y <= 570)) {
-            if (player.hasItem(currentRoom.getDoorVariable())) {
-                gui.setMessage("you may go through the door");
-                uiCounter = 4;
-            } else {
-                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-            }
+            return true;
         }
         
         else if ((counter == 3 || counter == 6) && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
+            return true;
+        }
+        else {return false;}
+    }
+
+    public boolean textClicked(int x, int y){
+        if (x >= 1040 && x <= 1100 && y >= 45 && y <= 110) {
+            return true;
+        }
+        else {return false;}
+    }
+
+    public void tryTheDoor(int x, int y){
+        if(doorClicked(x, y)){
             if (player.hasItem(currentRoom.getDoorVariable())) {
                 gui.setMessage("you may go through the door");
                 uiCounter = 4;
@@ -266,7 +255,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
                 gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
             }
         }
-        else if (x >= 1040 && x <= 1100 && y >= 45 && y <= 110) {
+        else if (textClicked(x, y)){
             if (currentRoom.isNemesisRoom()) {
                 statsGui.setStatNem("The nemesis asks you a question.");
             }
