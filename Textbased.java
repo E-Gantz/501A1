@@ -71,6 +71,28 @@ public class Textbased {
 		return pickedOption;
 	}
 
+    /**
+	 * chooseStringOption is used when we need the player to enter a string as input.
+	 * @return
+	 */
+	public String chooseStringOption() {
+		Scanner keyboard = new Scanner(System.in);
+		while (!keyboard.hasNextLine()){
+            keyboard.next();
+            System.out.println("Please enter a string: ");
+		}
+		String pickedOption = keyboard.nextLine();
+        while (pickedOption.contains(" ")){
+            System.out.println("please enter a valid one word answer, with no spaces.");
+            while (!keyboard.hasNextLine()){
+                keyboard.next();
+                System.out.println("Please enter a string: ");
+            }
+            pickedOption = keyboard.nextLine();
+        }
+		return pickedOption;
+	}
+
     
     /**
 	 * entryMessageText is used to display an entry message when the player enters a new room.
@@ -183,25 +205,10 @@ public class Textbased {
                     }
                     System.out.println(roomChallenge.getQuestion());
                     System.out.print("Enter your answer: ");
-                    Scanner keyboard5 = new Scanner(System.in);
-                    while (!keyboard5.hasNextLine()){
-                            keyboard5.next();
-                            System.out.println("Please enter a string: ");
-                        }
-                    String answer = keyboard5.nextLine();
-
-                    if (!(roomChallenge.checkValidInput(answer))){
-                        System.out.println("please enter a valid one word answer, with no spaces.");
-                        while (!keyboard5.hasNextLine()){
-                                keyboard5.next();
-                                System.out.println("Please enter a string: ");
-                            }
-                        answer = keyboard5.nextLine();
-                    }
+                    String answer = chooseStringOption();
                     boolean correctAnswer = roomChallenge.verifyAnswer(answer);
                     if (correctAnswer) {
                         System.out.println("Correct answer! you may go through the door.");
-                        System.out.println("you may go through the door");
                         exitMessageText(counter);
                         int roomChoice = chooseIntOption(1, numberOfDoors);
                         if((counter == 4 || counter == 5) && roomChoice == 2) {
