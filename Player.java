@@ -4,23 +4,13 @@ public class Player {
 	
 	private int health = 0;
 	private ArrayList<Item> items = new ArrayList<Item>();
-	
-	/**
-	 * Constructor, sets the initial health and items list of the player.
-	 * @param initialHealth  value to set the players health to
-	 * @param items2  list of items to set the players starting items to.
-	 */
-	public Player(int initialHealth, ArrayList<Item> items2) {
-		health = initialHealth;
-		items = new ArrayList<Item>(items2);
+
+	public Player(int chosenCharacter){
+		health = startHealth(chosenCharacter);
+		items = startItems(chosenCharacter);
 	}
-	
-	/**
-	 * constructor used to create an empty player class so that the methods can be used.
-	 */
-	public Player() {
-		
-	}
+
+	public Player(){}
 	
 	/**
 	 * adds an item to the players list of items.
@@ -79,6 +69,10 @@ public class Player {
 	 */
 	public int getHealth() {
 		return health;
+	}
+
+	public ArrayList<Item> getItems(){
+		return items;
 	}
 
 	/**

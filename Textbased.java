@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Textbased {
@@ -11,12 +10,9 @@ public class Textbased {
     private Room currentRoom;
 
     public Textbased() {
-        player = new Player();
         difficulty = pickDifficulty();
         int chosenCharacter = pickCharacter();
-        int initialHealth = player.startHealth(chosenCharacter);
-        ArrayList<Item> items = new ArrayList<Item>(player.startItems(chosenCharacter));
-        player = new Player(initialHealth, items);
+        player = new Player(chosenCharacter);
         currentRoom = new Room(difficulty, nemesisAppears);
     }
 

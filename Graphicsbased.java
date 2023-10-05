@@ -1,7 +1,5 @@
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Random;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Graphicsbased implements MouseListener, ActionListener {
@@ -49,11 +47,6 @@ public class Graphicsbased implements MouseListener, ActionListener {
 	public int entryMessage(int counter) {
 		if(counter == 1){
 			numberOfDoors = 2;
-			/*statsGui.setStatNem("TUTORIAL: click on one of the doors to try and use an item to unlock it."
-					+ " if you have the correct item you will be able to go through to the next room."
-					+ " you can also click the puzzle icon in the top right, this will give you a puzzle"
-					+ " to solve, and if you are correct you can continue to the next room, if you are incorrect you will lose some health."
-					+ " if a nemesis appears, then it will ask you a tougher question, and you will lose a higher amount of health.");*/
 			gui.setMessage("You step into the first room.");
 		} else if(counter == 2) {
 			numberOfDoors = 3;
@@ -90,53 +83,56 @@ public class Graphicsbased implements MouseListener, ActionListener {
 		gui.setMessage("click a door to go through");
 	}
 
+    public void pickCharacter(){
+        if (uiCounter == 1) {
+		    difficulty = (Integer.parseInt(gui.getEntry().getText()));
+            statsGui.setStatNem(
+            "1: Jeff, starting health: 5,  Starting Item: Fire Key \n " +
+            "2: Dan, starting health: 10,  Starting Item: All Keys \n " +
+            "3: Suzy, starting health: 7,  Starting Item: Earth Key \n " +
+            "4: Tej, starting health: 8,  Starting Item: Metal Key \n " +
+            "5: Suki, starting health: 4,  Starting Item: Water Key, Wood Key \n " +
+            "6: Deprived, starting health: 1,  Starting Item: None  ");
+            gui.setMessage("Pick your character: ");
+            gui.setBackground("Tutorial.jpg");
+            gui.clearField();
+            uiCounter++;
+		}
+        else if (uiCounter == 2) {
+            int chosenCharacter = (Integer.parseInt(gui.getEntry().getText()));
+            player = new Player(chosenCharacter);
+            statsGui.setStatHealth(Integer.toString(player.getHealth()));
+            String itemNames = "";
+            for (int index2 = 0; index2 < player.getItems().size();index2 ++) {
+                itemNames = itemNames + player.getItems().get(index2).getName() + " ";
+            }
+            if (player.getItems().size() == 5) {
+                statsGui.setStatItem("All Keys");
+            }
+            else {
+                statsGui.setStatItem(itemNames);
+            }
+            statsGui.setStatNem("");
+        }
+    }
+
     /**
 	 * button listener, does things with their input dependent on what stage of the game the user is at.
 	 * uicounter is used to determine what "stage" the game is in, i.e. choosing the difficulty stage, choosing the character stage,etc.
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if (event.getActionCommand().equals("Answer")) {
-			
 			if (uiCounter == 1) {
-				
 				if (Integer.parseInt(gui.getEntry().getText()) > 0 && Integer.parseInt(gui.getEntry().getText()) < 4) {
-					difficulty = (Integer.parseInt(gui.getEntry().getText()));
-					statsGui.setStatNem(
-                    "1: Jeff, starting health: 5,  Starting Item: Fire Key \n " +
-                    "2: Dan, starting health: 10,  Starting Item: All Keys \n " +
-                    "3: Suzy, starting health: 7,  Starting Item: Earth Key \n " +
-                    "4: Tej, starting health: 8,  Starting Item: Metal Key \n " +
-                    "5: Suki, starting health: 4,  Starting Item: Water Key, Wood Key \n " +
-                    "6: Deprived, starting health: 1,  Starting Item: None  ");
-                    gui.setMessage("Pick your character: ");
-					gui.setBackground("Tutorial.jpg");
-					gui.clearField();
-					uiCounter++;
+					pickCharacter();
 				}
 				else {
 					statsGui.setStatNem("please enter a valid input");
 				}
 			}
-			
 			else if (uiCounter == 2) {
-				
 				if (Integer.parseInt(gui.getEntry().getText()) > 0 && Integer.parseInt(gui.getEntry().getText()) < 7) {
-					int chosenCharacter = (Integer.parseInt(gui.getEntry().getText()));
-					int initialHealth = player.startHealth(chosenCharacter);
-					statsGui.setStatHealth(Integer.toString(initialHealth));
-					ArrayList<Item> items = new ArrayList<Item>(player.startItems(chosenCharacter));
-					String itemNames = "";
-					for (int index2 = 0; index2 < items.size();index2 ++) {
-						itemNames = itemNames + items.get(index2).getName() + " ";
-					}
-					if (items.size() == 5) {
-						statsGui.setStatItem("All Keys");
-					}
-					else {
-						statsGui.setStatItem(itemNames);
-					}
-					statsGui.setStatNem("");
-					player = new Player(initialHealth, items);
+					pickCharacter();
 					numberOfDoors = entryMessage(counter);
 					currentRoom = new Room(difficulty, nemesisAppears);
 					gui.setBackground("Background1.jpg");
@@ -147,170 +143,181 @@ public class Graphicsbased implements MouseListener, ActionListener {
 					gui.setMessage("please enter a valid input");
 				}
 			}
-			
 			else if (uiCounter2 == 90) {
-				answer = (gui.getEntry().getText());
-				if (true){ //TODO: string input validation here, no spaces.
-				
-					boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
-					if (correctAnswer) {
-						gui.setMessage("Correct answer! you may go through the door.");
-						gui.clearField();
-						uiCounter = 4;
-					}
-					else if (!correctAnswer) {
-						gui.setMessage("Incorrect answer! you lost some health.");
-						if (currentRoom.isNemesisRoom()) {
-							if (player.getHealth() >= 2) {
-								player.updateHealth(2);
-							}
-							else if (player.getHealth() < 2) {
-								player.updateHealth(1);
-							}
-							statsGui.setStatHealth(Integer.toString(player.getHealth()));
-							if (!player.isAlive()) {
-								gui.setMessage("Game Over");
-								gui.setBackground("death.jpg");
-								uiCounter = 30;
-								uiCounter2 = 2;
-							}
-						}
-						else {
-							player.updateHealth(1);
-							statsGui.setStatHealth(Integer.toString(player.getHealth()));
-							if (!player.isAlive()) {
-								gui.setMessage("Game Over");
-								gui.setBackground("death.jpg");
-								uiCounter = 30;
-								uiCounter2 = 2;
-							}
-						}
-					}
-				}
-				else {
-					statsGui.setStatNem("please enter a valid one word answer, with no spaces.");
-				}
+				tryPuzzle();
 				gui.clearField();
 			}
-			
-			
 		}
 	}
+
+    public void tryPuzzle(){
+        answer = (gui.getEntry().getText());
+        if (!answer.contains(" ")){
+        
+            boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
+            if (correctAnswer) {
+                gui.setMessage("Correct answer! you may go through the door.");
+                gui.clearField();
+                uiCounter = 4;
+            }
+            else if (!correctAnswer) {
+                gui.setMessage("Incorrect answer! you lost some health.");
+                loseHealth();
+            }
+        }
+        else {
+            statsGui.setStatNem("please enter a valid one word answer, with no spaces.");
+        }
+    }
+
+    public void loseHealth(){
+        if (currentRoom.isNemesisRoom()) {
+            if (player.getHealth() >= 2) {
+                player.updateHealth(2);
+            }
+            else if (player.getHealth() < 2) {
+                player.updateHealth(1);
+            }
+            statsGui.setStatHealth(Integer.toString(player.getHealth()));
+            if (!player.isAlive()) {
+                gui.setMessage("Game Over");
+                gui.setBackground("death.jpg");
+                uiCounter = 30;
+                uiCounter2 = 2;
+            }
+        }
+        else {
+            player.updateHealth(1);
+            statsGui.setStatHealth(Integer.toString(player.getHealth()));
+            if (!player.isAlive()) {
+                gui.setMessage("Game Over");
+                gui.setBackground("death.jpg");
+                uiCounter = 30;
+                uiCounter2 = 2;
+            }
+        }
+    }
+
     public void nextRoom(int aroomChoice) {
 		if((counter == 4 || counter == 5) && aroomChoice == 2) {
 			nemesisAppears = true;
-			} else {
+		} 
+        else {
 			nemesisAppears = false;
 			statsGui.setStatNem("");
-			}
-			currentRoom = new Room(difficulty, nemesisAppears);
-			counter ++;
-			numberOfDoors = entryMessage(counter);
-			if (currentRoom.isNemesisRoom()) {
-				statsGui.setStatNem("A NEMESIS APPEARS.");
-			}
-			uiCounter = 3;
+		}
+        currentRoom = new Room(difficulty, nemesisAppears);
+        counter ++;
+        numberOfDoors = entryMessage(counter);
+        if (currentRoom.isNemesisRoom()) {
+            statsGui.setStatNem("A NEMESIS APPEARS.");
+        }
+        uiCounter = 3;
 	}
+
+    public void tryTheDoor(int x, int y){
+        if ((counter == 1 || counter == 5) && (x >= 270 && x <= 430 && y >= 185 && y <= 570)) {
+            if (player.hasItem(currentRoom.getDoorVariable())) {
+                gui.setMessage("you may go through the door");
+                uiCounter = 4;
+            } else {
+                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+            }
+        }
+        else if ((counter == 1 || counter == 5) && (x >= 730 && x <= 900 && y >= 185 && y <= 570)) {
+            if (player.hasItem(currentRoom.getDoorVariable())) {
+                gui.setMessage("you may go through the door");
+                uiCounter = 4;
+            } else {
+                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+            }
+        }
+        else if ((counter == 2 || counter == 4) && (x >= 110 && x <= 290 && y >= 185 && y <= 570)) {
+            if (player.hasItem(currentRoom.getDoorVariable())) {
+                gui.setMessage("you may go through the door");
+                uiCounter = 4;
+            } else {
+                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+            }
+        }
+        
+        else if((counter == 2 || counter == 4) && (x >= 490 && x <= 660 && y >= 185 && y <= 570)) {
+            if (player.hasItem(currentRoom.getDoorVariable())) {
+                gui.setMessage("you may go through the door");
+                uiCounter = 4;
+            } else {
+                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+            }
+        }
+        else if ((counter == 2 || counter == 4) && (x >= 820 && x <= 990 && y >= 185 && y <= 570)) {
+            if (player.hasItem(currentRoom.getDoorVariable())) {
+                gui.setMessage("you may go through the door");
+                uiCounter = 4;
+            } else {
+                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+            }
+        }
+        
+        else if ((counter == 3 || counter == 6) && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
+            if (player.hasItem(currentRoom.getDoorVariable())) {
+                gui.setMessage("you may go through the door");
+                uiCounter = 4;
+            } else {
+                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+            }
+        }
+        else if (x >= 1040 && x <= 1100 && y >= 45 && y <= 110) {
+            if (currentRoom.isNemesisRoom()) {
+                statsGui.setStatNem("The nemesis asks you a question.");
+            }
+            gui.setMessage(currentRoom.getChallenge().getQuestion() + " Enter your answer.");
+            //get string from text field
+            uiCounter2 = 90;
+        }
+    }
+
+    public void pickaRoom(int x, int y){
+        if ((counter == 1 || counter == 5) && (x >= 270 && x <= 430 && y >= 185 && y <= 570)) {
+            roomChoice = 1;
+            nextRoom(roomChoice);
+        }
+        else if ((counter == 1 || counter == 5) && (x >= 730 && x <= 900 && y >= 185 && y <= 570)) {
+            roomChoice = 2;
+            nextRoom(roomChoice);
+        }
+        else if ((counter == 2 || counter == 4) && (x >= 110 && x <= 290 && y >= 185 && y <= 570)) {
+            roomChoice = 1;
+            nextRoom(roomChoice);
+        }
+        
+        else if((counter == 2 || counter == 4) && (x >= 490 && x <= 660 && y >= 185 && y <= 570)) {
+            roomChoice = 2;
+            nextRoom(roomChoice);
+        }
+        else if ((counter == 2 || counter == 4) && (x >= 820 && x <= 990 && y >= 185 && y <= 570)) {
+            roomChoice = 3;
+            nextRoom(roomChoice);
+        }
+        
+        else if (counter == 3 && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
+            roomChoice = 1;
+            nextRoom(roomChoice);
+        }
+        else if (counter == 6 && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
+            gui.setMessage("Congratulations! You completed our game!");
+            gui.setBackground("win.jpg");
+        }
+    }
 
     @Override
     public void mouseClicked(MouseEvent click) {
         int x = click.getX();
         int y = click.getY();
         if (uiCounter == 3) {
-			if ((counter == 1 || counter == 5) && (x >= 270 && x <= 430 && y >= 185 && y <= 570)) {
-                if (player.hasItem(currentRoom.getDoorVariable())) {
-                    gui.setMessage("you may go through the door");
-                    uiCounter = 4;
-                } else {
-                    gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-                }
-            }
-            else if ((counter == 1 || counter == 5) && (x >= 730 && x <= 900 && y >= 185 && y <= 570)) {
-                if (player.hasItem(currentRoom.getDoorVariable())) {
-                    gui.setMessage("you may go through the door");
-                    uiCounter = 4;
-                } else {
-                    gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-                }
-            }
-            else if ((counter == 2 || counter == 4) && (x >= 110 && x <= 290 && y >= 185 && y <= 570)) {
-                if (player.hasItem(currentRoom.getDoorVariable())) {
-                    gui.setMessage("you may go through the door");
-                    uiCounter = 4;
-                } else {
-                    gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-                }
-            }
-            
-            else if((counter == 2 || counter == 4) && (x >= 490 && x <= 660 && y >= 185 && y <= 570)) {
-                if (player.hasItem(currentRoom.getDoorVariable())) {
-                    gui.setMessage("you may go through the door");
-                    uiCounter = 4;
-                } else {
-                    gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-                }
-            }
-            else if ((counter == 2 || counter == 4) && (x >= 820 && x <= 990 && y >= 185 && y <= 570)) {
-                if (player.hasItem(currentRoom.getDoorVariable())) {
-                    gui.setMessage("you may go through the door");
-                    uiCounter = 4;
-                } else {
-                    gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-                }
-            }
-            
-            else if ((counter == 3 || counter == 6) && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
-                if (player.hasItem(currentRoom.getDoorVariable())) {
-                    gui.setMessage("you may go through the door");
-                    uiCounter = 4;
-                } else {
-                    gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
-                }
-            }
-            
-            
-            else if (x >= 1040 && x <= 1100 && y >= 45 && y <= 110) {
-                if (currentRoom.isNemesisRoom()) {
-                    statsGui.setStatNem("The nemesis asks you a question.");
-                }
-                gui.setMessage(currentRoom.getChallenge().getQuestion() + " Enter your answer.");
-                //get string from text field
-                uiCounter2 = 90;
-            }
+            tryTheDoor(x, y);
 		}
 		else if (uiCounter == 4) {
-			if ((counter == 1 || counter == 5) && (x >= 270 && x <= 430 && y >= 185 && y <= 570)) {
-                roomChoice = 1;
-                nextRoom(roomChoice);
-            }
-            else if ((counter == 1 || counter == 5) && (x >= 730 && x <= 900 && y >= 185 && y <= 570)) {
-                roomChoice = 2;
-                nextRoom(roomChoice);
-            }
-            else if ((counter == 2 || counter == 4) && (x >= 110 && x <= 290 && y >= 185 && y <= 570)) {
-                roomChoice = 1;
-                nextRoom(roomChoice);
-            }
-            
-            else if((counter == 2 || counter == 4) && (x >= 490 && x <= 660 && y >= 185 && y <= 570)) {
-                roomChoice = 2;
-                nextRoom(roomChoice);
-            }
-            else if ((counter == 2 || counter == 4) && (x >= 820 && x <= 990 && y >= 185 && y <= 570)) {
-                roomChoice = 3;
-                nextRoom(roomChoice);
-            }
-            
-            else if (counter == 3 && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
-                roomChoice = 1;
-                nextRoom(roomChoice);
-            }
-            
-            
-            else if (counter == 6 && (x >= 450 && x <= 620 && y >= 185 && y <= 570)) {
-                gui.setMessage("Congratulations! You completed our game!");
-                gui.setBackground("win.jpg");
-            }
+			pickaRoom(x, y);
 		}
     }
 
