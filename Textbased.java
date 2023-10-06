@@ -1,20 +1,6 @@
 import java.util.Scanner;
 
 public class Textbased {
-    private boolean nemesisAppears = false;
-	private Player player;
-	private int difficulty;
-	private int counter;
-	private int numberOfDoors;
-	private boolean keepPlaying;
-    private Room currentRoom;
-
-    public Textbased() {
-        difficulty = pickDifficulty();
-        int chosenCharacter = pickCharacter();
-        player = new Player(chosenCharacter);
-        currentRoom = new Room(difficulty, nemesisAppears);
-    }
 
     /**
 	 * pickDifficulty lets the user choose what difficulty they would like to play on.
@@ -100,7 +86,7 @@ public class Textbased {
 	 * @param counter
 	 * @return
 	 */
-	public static int entryMessage(int counter) {
+	public int entryMessage(int counter) {
         int numberOfDoors = 1;
 		if(counter == 1){
 			numberOfDoors = 2;
@@ -131,7 +117,7 @@ public class Textbased {
 	 * @param counter
 	 * @return
 	 */
-	public static void exitMessage(int counter) {
+	public void exitMessage(int counter) {
 		if(counter == 1){
 			System.out.println("Do you want to go through the first door or the second door?");
 			System.out.println("Choice: ");
@@ -163,84 +149,36 @@ public class Textbased {
         return chooseIntOption(1,2);
     }
 
-    public void tryTheDoor(){
-        if (player.hasItem(currentRoom.getDoorVariable())) {
+    public void tryTheDoor(boolean success){
+        if (success) {
             System.out.println("you may go through the door");
-            pickaRoom();
         } else {
             System.out.println("you don't have the correct item for that");
         }
     }
 
-    public void pickaRoom(){
-        exitMessage(counter);
-        int roomChoice = chooseIntOption(1, numberOfDoors);
-        if (counter == 6){
-            keepPlaying = false;
-        }
-        if((counter == 4 || counter == 5) && roomChoice == 2) {
-            nemesisAppears = true;
-        } else {
-            nemesisAppears = false;
-        }
-        currentRoom = new Room(difficulty, nemesisAppears);
-        counter ++;
-        numberOfDoors = entryMessage(counter);
-    }
-
-    public void loseHealth(){
-        if (currentRoom.isNemesisRoom()) {
-            player.updateHealth(2);
-            System.out.println("your current health:" + player.getHealth());
-            if (!player.isAlive()) {
-                System.out.print("YOU DIED");
-                System.exit(0);
-            }
-        }
-        else {
-            player.updateHealth(1);
-            System.out.println("your current health:" + player.getHealth());
-            if (!player.isAlive()) {
-                System.out.print("YOU DIED");
-                System.exit(0);
-            }
+    public void loseHealth(int health, boolean alive){
+        System.out.println("your current health:" + health);
+        if (!alive) {
+            System.out.print("YOU DIED");
         }
     }
 
-    public void tryPuzzle(){
-        if (currentRoom.isNemesisRoom()) {
+    public void tryPuzzle(boolean nemesis, String question){
+        if (nemesis) {
             System.out.println("A NEMESIS APPEARS");
             System.out.println("The nemesis asks you a question");
         }
-        System.out.println(currentRoom.getChallenge().getQuestion());
+        System.out.println(question);
         System.out.print("Enter your answer: ");
-        String answer = chooseStringOption();
-        boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
-        if (correctAnswer) {
-            System.out.println("Correct answer! you may go through the door.");
-            pickaRoom();
-        }
-        else if (!correctAnswer) {
-            System.out.println("Incorrect answer! you lost some health.");
-            loseHealth();
-        }
     }
 
-    public void play(){
-        keepPlaying = true;
-        counter = 1;
-        numberOfDoors = entryMessage(counter);
-        while (counter <= 6) {
-            while (keepPlaying) {
-                int pickedOption = chooseAction();
-                if (pickedOption == 1) {
-                    tryTheDoor();
-                }
-                else if (pickedOption == 2) {
-                    tryPuzzle();
-                }
-            }
-        }	
-        System.out.println("Congratulations, you completed our game!.");
+    public void tryPuzzle(boolean success){
+        if (success) {
+            System.out.println("Correct answer! you may go through the door.");
+        }
+        else {
+            System.out.println("Incorrect answer! you lost some health.");
+        }
     }
 }
