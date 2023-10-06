@@ -9,13 +9,13 @@ public class Graphicsbased implements MouseListener, ActionListener {
     private int counter = 1;
 	private int uiCounter = 1;
 	private int uiCounter2 = 1;
-    private puzzleGame game;
+    private GraphicsGame game;
     
 
     /**
 	 * Constructor, creates the player instance, adds the listeners, and sets the first message on the label.
 	 */
-	public Graphicsbased(puzzleGame aGame){
+	public Graphicsbased(GraphicsGame aGame){
         this.game = aGame;
 		gui.getGuessBtn().addActionListener(this);
 		gui.setMessage("There are 3 difficulty levels: 1: easy 2: medium 3: hard choose one.");
@@ -167,7 +167,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
     }
 
     public void loseHealth(){
-        boolean alive = game.loseHealth(1);
+        boolean alive = game.loseHealth();
         statsGui.setStatHealth(Integer.toString(game.getPlayer().getHealth()));
         if(!alive){
             gui.setMessage("Game Over");
@@ -220,7 +220,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
 
     public void tryTheDoor(int x, int y){
         if(doorClicked(x, y)){
-            boolean success = game.tryTheDoor(1);
+            boolean success = game.tryTheDoor();
             if (success) {
                 statsGui.setStatNem("");
                 gui.setMessage("you may go through the door");
