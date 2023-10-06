@@ -3,25 +3,20 @@ import java.awt.event.MouseListener;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Graphicsbased implements MouseListener, ActionListener {
-    private boolean nemesisAppears = false;
-	private Player player;
-	private int difficulty;
-	private int counter = 1;
-	private int numberOfDoors;
 	private String answer;
 	private GameGUI gui = new GameGUI();
 	private StatsGUI statsGui = new StatsGUI();
-	private int roomChoice;
+    private int counter = 1;
 	private int uiCounter = 1;
 	private int uiCounter2 = 1;
-    private Room currentRoom;
+    private puzzleGame game;
     
 
     /**
 	 * Constructor, creates the player instance, adds the listeners, and sets the first message on the label.
 	 */
-	public Graphicsbased(){
-		player = new Player();
+	public Graphicsbased(puzzleGame aGame){
+        this.game = aGame;
 		gui.getGuessBtn().addActionListener(this);
 		gui.setMessage("There are 3 difficulty levels: 1: easy 2: medium 3: hard choose one.");
 		gui.getContentPane().addMouseListener(this);
@@ -45,6 +40,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
 	 * @return numberOfDoors  the number of doors in the next room.
 	 */
 	public int entryMessage(int counter) {
+        int numberOfDoors = 1;
 		if(counter == 1){
 			numberOfDoors = 2;
 			gui.setMessage("You step into the first room.");
@@ -85,7 +81,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
 
     public void pickCharacter(){
         if (uiCounter == 1) {
-		    difficulty = (Integer.parseInt(gui.getEntry().getText()));
+		    game.setDifficulty((Integer.parseInt(gui.getEntry().getText())));
             statsGui.setStatNem(
             "1: Jeff, starting health: 5,  Starting Item: Fire Key \n " +
             "2: Dan, starting health: 10,  Starting Item: All Keys \n " +
@@ -100,13 +96,13 @@ public class Graphicsbased implements MouseListener, ActionListener {
 		}
         else if (uiCounter == 2) {
             int chosenCharacter = (Integer.parseInt(gui.getEntry().getText()));
-            player = new Player(chosenCharacter);
-            statsGui.setStatHealth(Integer.toString(player.getHealth()));
+            game.setPlayer(chosenCharacter);
+            statsGui.setStatHealth(Integer.toString(game.getPlayer().getHealth()));
             String itemNames = "";
-            for (int index2 = 0; index2 < player.getItems().size();index2 ++) {
-                itemNames = itemNames + player.getItems().get(index2).getName() + " ";
+            for (int index2 = 0; index2 < game.getPlayer().getItems().size();index2 ++) {
+                itemNames = itemNames + game.getPlayer().getItems().get(index2).getName() + " ";
             }
-            if (player.getItems().size() == 5) {
+            if (game.getPlayer().getItems().size() == 5) {
                 statsGui.setStatItem("All Keys");
             }
             else {
@@ -133,8 +129,8 @@ public class Graphicsbased implements MouseListener, ActionListener {
 			else if (uiCounter == 2) {
 				if (Integer.parseInt(gui.getEntry().getText()) > 0 && Integer.parseInt(gui.getEntry().getText()) < 7) {
 					pickCharacter();
-					numberOfDoors = entryMessage(counter);
-					currentRoom = new Room(difficulty, nemesisAppears);
+					game.setNumDoors(entryMessage(counter));
+					game.createRoom();
 					gui.setBackground("Background1.jpg");
 					gui.clearField();
 					uiCounter++;
@@ -154,7 +150,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
         answer = (gui.getEntry().getText());
         if (!answer.contains(" ")){
         
-            boolean correctAnswer = currentRoom.getChallenge().verifyAnswer(answer);
+            boolean correctAnswer = game.tryPuzzle(answer);
             if (correctAnswer) {
                 gui.setMessage("Correct answer! you may go through the door.");
                 gui.clearField();
@@ -171,45 +167,21 @@ public class Graphicsbased implements MouseListener, ActionListener {
     }
 
     public void loseHealth(){
-        if (currentRoom.isNemesisRoom()) {
-            if (player.getHealth() >= 2) {
-                player.updateHealth(2);
-            }
-            else if (player.getHealth() < 2) {
-                player.updateHealth(1);
-            }
-            statsGui.setStatHealth(Integer.toString(player.getHealth()));
-            if (!player.isAlive()) {
-                gui.setMessage("Game Over");
-                gui.setBackground("death.jpg");
-                uiCounter = 30;
-                uiCounter2 = 2;
-            }
-        }
-        else {
-            player.updateHealth(1);
-            statsGui.setStatHealth(Integer.toString(player.getHealth()));
-            if (!player.isAlive()) {
-                gui.setMessage("Game Over");
-                gui.setBackground("death.jpg");
-                uiCounter = 30;
-                uiCounter2 = 2;
-            }
+        boolean alive = game.loseHealth(1);
+        statsGui.setStatHealth(Integer.toString(game.getPlayer().getHealth()));
+        if(!alive){
+            gui.setMessage("Game Over");
+            gui.setBackground("death.jpg");
+            uiCounter = 30;
+            uiCounter2 = 2;
         }
     }
 
     public void nextRoom(int aroomChoice) {
-		if((counter == 4 || counter == 5) && aroomChoice == 2) {
-			nemesisAppears = true;
-		} 
-        else {
-			nemesisAppears = false;
-			statsGui.setStatNem("");
-		}
-        currentRoom = new Room(difficulty, nemesisAppears);
         counter ++;
-        numberOfDoors = entryMessage(counter);
-        if (currentRoom.isNemesisRoom()) {
+        game.setNumDoors(entryMessage(counter));
+		game.pickaRoom(aroomChoice);
+        if (game.isNemesis()) {
             statsGui.setStatNem("A NEMESIS APPEARS.");
         }
         uiCounter = 3;
@@ -239,7 +211,7 @@ public class Graphicsbased implements MouseListener, ActionListener {
         else {return false;}
     }
 
-    public boolean textClicked(int x, int y){
+    public boolean puzzleClicked(int x, int y){
         if (x >= 1040 && x <= 1100 && y >= 45 && y <= 110) {
             return true;
         }
@@ -248,24 +220,27 @@ public class Graphicsbased implements MouseListener, ActionListener {
 
     public void tryTheDoor(int x, int y){
         if(doorClicked(x, y)){
-            if (player.hasItem(currentRoom.getDoorVariable())) {
+            boolean success = game.tryTheDoor(1);
+            if (success) {
+                statsGui.setStatNem("");
                 gui.setMessage("you may go through the door");
                 uiCounter = 4;
             } else {
-                gui.setMessage("You need a " + currentRoom.getDoorVariable().getName() + " to unlock the door.");
+                gui.setMessage("You need a " + game.getKeyName() + " to unlock the door.");
             }
         }
-        else if (textClicked(x, y)){
-            if (currentRoom.isNemesisRoom()) {
+        else if (puzzleClicked(x, y)){
+            if (game.isNemesis()) {
                 statsGui.setStatNem("The nemesis asks you a question.");
             }
-            gui.setMessage(currentRoom.getChallenge().getQuestion() + " Enter your answer.");
+            gui.setMessage(game.getQuestion() + " Enter your answer.");
             //get string from text field
             uiCounter2 = 90;
         }
     }
 
     public void pickaRoom(int x, int y){
+        int roomChoice;
         if ((counter == 1 || counter == 5) && (x >= 270 && x <= 430 && y >= 185 && y <= 570)) {
             roomChoice = 1;
             nextRoom(roomChoice);

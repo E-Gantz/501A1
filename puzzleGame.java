@@ -53,7 +53,7 @@ public class puzzleGame{
     }
 
     public void playGraphx(){
-        Graphicsbased graphx = new Graphicsbased();
+        Graphicsbased graphx = new Graphicsbased(this);
         graphx.play();
     }
 
@@ -64,6 +64,10 @@ public class puzzleGame{
         } else {
             tex.tryTheDoor(false);
         }
+    }
+
+    public boolean tryTheDoor(int useless){
+        return player.hasItem(currentRoom.getDoorVariable());
     }
 
     public void pickaRoom(){
@@ -82,6 +86,19 @@ public class puzzleGame{
         numberOfDoors = tex.entryMessage(counter);
     }
 
+    public void pickaRoom(int roomChoice){
+        if (counter == 6){
+            keepPlaying = false;
+        }
+        if((counter == 4 || counter == 5) && roomChoice == 2) {
+            nemesisAppears = true;
+        } else {
+            nemesisAppears = false;
+        }
+        currentRoom = new Room(difficulty, nemesisAppears);
+        counter ++;
+    }
+
     public void tryPuzzle(){
         tex.tryPuzzle(currentRoom.isNemesisRoom(), currentRoom.getChallenge().getQuestion());
         String answer = tex.chooseStringOption();
@@ -95,6 +112,10 @@ public class puzzleGame{
         }
     }
 
+    public boolean tryPuzzle(String answer){
+        return currentRoom.getChallenge().verifyAnswer(answer);
+    }
+
     public void loseHealth(){
         if (currentRoom.isNemesisRoom()) {
             player.updateHealth(2);
@@ -106,5 +127,48 @@ public class puzzleGame{
         if (!player.isAlive()) {
             System.exit(0);
         }
+    }
+
+    public boolean loseHealth(int useless){
+        if (currentRoom.isNemesisRoom()) {
+            player.updateHealth(2);
+        }
+        else {
+            player.updateHealth(1);
+        }
+        return player.isAlive();
+    }
+
+    public void setDifficulty(int newDifficulty){
+        this.difficulty = newDifficulty;
+    }
+
+    public void setPlayer(int chosenCharacter){
+        this.player = new Player(chosenCharacter);
+    }
+
+    public Player getPlayer(){
+        return player;
+    }
+
+    public void setNumDoors(int many){
+        this.numberOfDoors = many;
+    }
+
+    public void createRoom(){
+        currentRoom = new Room(difficulty, nemesisAppears);
+        counter ++;
+    }
+
+    public String getKeyName(){
+        return currentRoom.getDoorVariable().getName();
+    }
+
+    public boolean isNemesis(){
+        return currentRoom.isNemesisRoom();
+    }
+
+    public String getQuestion(){
+        return currentRoom.getChallenge().getQuestion();
     }
 }
