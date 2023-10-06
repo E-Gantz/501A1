@@ -1,5 +1,7 @@
+package UI;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import Logic.GraphicsGame;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Graphicsbased implements MouseListener, ActionListener {

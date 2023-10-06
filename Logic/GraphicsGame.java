@@ -1,3 +1,6 @@
+package Logic;
+import UI.Graphicsbased;
+import Game.puzzleGame;
 public class GraphicsGame extends puzzleGame{
 
     public void play(){

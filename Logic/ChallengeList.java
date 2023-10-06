@@ -1,3 +1,4 @@
+package Logic;
 import java.io.*;
 
 public class ChallengeList {
@@ -11,7 +12,7 @@ public class ChallengeList {
     	String sentence = "";
 		int lineNumber = 0;
         try {
-            BufferedReader input = new BufferedReader(new FileReader("questions.txt"));
+            BufferedReader input = new BufferedReader(new FileReader("Resources/questions.txt"));
 			String line = "";
 			while(lineNumber <= questionNum) {
 				line = input.readLine();
@@ -43,7 +44,7 @@ public class ChallengeList {
 		String sentence = "";
 		int lineNumber = 0;
         try {
-            BufferedReader input = new BufferedReader(new FileReader("answers.txt"));
+            BufferedReader input = new BufferedReader(new FileReader("Resources/answers.txt"));
 			String line = input.readLine();
 			while(lineNumber < questionNum) {
 				line = input.readLine();

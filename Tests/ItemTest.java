@@ -1,5 +1,8 @@
+package Tests;
 import static org.junit.Assert.*;
 import org.junit.Test;
+
+import Logic.Item;
 public class ItemTest {
 	@Test
 	public void correctID() {

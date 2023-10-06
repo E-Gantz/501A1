@@ -1,6 +1,7 @@
+package Tests;
 import static org.junit.Assert.*;
 import org.junit.Test;
-
+import Logic.Challenge;
 
 public class ChallengeTest {
 	//test level 1

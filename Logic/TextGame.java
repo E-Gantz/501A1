@@ -1,3 +1,6 @@
+package Logic;
+import Game.puzzleGame;
+import UI.Textbased;
 public class TextGame extends puzzleGame{
     public TextGame(Textbased tex){
         this.tex = tex;

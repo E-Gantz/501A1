@@ -1,3 +1,6 @@
+package Game;
+import Logic.*;
+import UI.*;
 
 public class puzzleGame{
     protected boolean nemesisAppears = false;

@@ -1,3 +1,4 @@
+package UI;
 import java.awt.*;
 import javax.swing.*;
 import java.io.*;
@@ -47,7 +48,7 @@ public class GameGUI extends JFrame {
 			msgLabel.setFont(msgLabel.getFont().deriveFont(30.0f));
 			content.add(msgLabel);
 			
-			background = (new BackgroundImage(fileName));
+			background = (new BackgroundImage("Resources/" + fileName));
 			background.setPreferredSize(new Dimension(1100,618));
 			content.add(background);
 			
@@ -99,7 +100,7 @@ public class GameGUI extends JFrame {
 		content.add(msgLabel);
 		try {
 			fileName = "titlescreen.jpg";
-			background = (new BackgroundImage(fileName));
+			background = (new BackgroundImage("Resources/" + fileName));
 			background.setPreferredSize(new Dimension(1100,618));
 			content.add(background);
 		}catch (IOException e) {
@@ -107,7 +108,7 @@ public class GameGUI extends JFrame {
 		}
 		
 		ArrayList<Image> icons = new ArrayList<Image>();
-		icons.add(new ImageIcon("taskbar.png").getImage());
+		icons.add(new ImageIcon("Resources/taskbar.png").getImage());
 		this.setIconImages(icons);
 		
 		msgLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);

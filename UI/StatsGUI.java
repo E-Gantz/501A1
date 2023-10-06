@@ -1,3 +1,4 @@
+package UI;
 import java.awt.*;
 import javax.swing.*;
 public class StatsGUI extends JFrame{
